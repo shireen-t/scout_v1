@@ -1,7 +1,3 @@
-"""
-Scout for accepting input as CAS number or element name and perform a strict validation process.
-"""
-
 import os
 import re
 from datetime import datetime
@@ -16,7 +12,7 @@ import json
 # Directories setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PDFS_FOLDER = os.path.join(BASE_DIR, "verified")
-TEMP_FOLDER = os.path.join(BASE_DIR, "unverified")
+TEMP_FOLDER = os.path.join(BASE_DIR, "uploads")  # Changed to persistent directory
 LOGS_FOLDER = os.path.join(BASE_DIR, "logs")
 os.makedirs(PDFS_FOLDER, exist_ok=True)
 os.makedirs(TEMP_FOLDER, exist_ok=True)
@@ -194,7 +190,7 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
                     add_report(report_list, cas, name, file_path, True, url, url)
                     return report_list  # Return the report list here
     return report_list
-    
+
 # Main function
 async def main(input_data):
     global DOWNLOADED_FILES_COUNT
