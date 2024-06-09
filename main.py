@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 import re
 from scout import main as scout_main
 
@@ -28,6 +28,19 @@ async def run_scout(cas_or_name: str):
         response = await scout_main(input_data)
         if not response:
             raise HTTPException(status_code=404, detail="No PDF found or verification failed.")
+        
+        # Modify file paths to URL paths
+        for report in response:
+            if report["filepath"]:
+                report["url"] = f"/files/{os.path.basename(report['filepath'])}"
+        
         return JSONResponse(content=response)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/files/{filename}")
+async def get_file(filename: str):
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail="File not found")
