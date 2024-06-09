@@ -177,10 +177,11 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
         query = f'"{url}" filetype:pdf'
     else:
         print("ERROR: CAS number or name or URL not provided.")
-        return False
+        return []
 
     global DOWNLOADED_FILES_COUNT
     DOWNLOADED_FILES_COUNT = 0
+    report_list = []
 
     async with aiohttp.ClientSession() as session:
         for url in search(query, num_results=20):
@@ -190,10 +191,10 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
             if is_pdf(url):
                 file_path = await download_pdf(session, url)
                 if file_path and verify_pdf(file_path, cas, name):
-                    add_report([], cas, name, file_path, True, url, url)
-                    return file_path
-    return None
-
+                    add_report(report_list, cas, name, file_path, True, url, url)
+                    return report_list  # Return the report list here
+    return report_list
+    
 # Main function
 async def main(input_data):
     global DOWNLOADED_FILES_COUNT
@@ -205,4 +206,11 @@ async def main(input_data):
         urls = data.get("urls")
         if urls:
             for url in urls:
-                verified_pdf_path = await download_and_verify
+                verified_pdf_path = await download_and_verify_pdfs(cas, name, url)
+                if verified_pdf_path:
+                    report_list.extend(verified_pdf_path)
+        else:
+            verified_pdf_path = await download_and_verify_pdfs(cas, name)
+            if verified_pdf_path:
+                report_list.extend(verified_pdf_path)
+    return save_report(report_list)  # Save and return the report list
