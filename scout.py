@@ -190,10 +190,10 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
             if is_pdf(url):
                 file_path = await download_pdf(session, url)
                 if file_path and verify_pdf(file_path, cas, name):
+                    add_report([], cas, name, file_path, True, url, url)
                     return file_path
     return None
 
-# Main function
 # Main function
 async def main(input_data):
     global DOWNLOADED_FILES_COUNT
@@ -205,13 +205,4 @@ async def main(input_data):
         urls = data.get("urls")
         if urls:
             for url in urls:
-                verified_pdfs = await download_and_verify_pdfs(cas=cas, name=name, url=url)
-                for url, path in verified_pdfs:
-                    add_report(report_list, cas, name, path, True, url, url)
-        elif cas or name:
-            verified_pdfs = await download_and_verify_pdfs(cas=cas, name=name)
-            for url, path in verified_pdfs:
-                add_report(report_list, cas, name, path, True, url, url)
-        else:
-            print(f"Skipping data: {data} (missing 'cas' or 'name')")
-    return save_report(report_list)
+                verified_pdf_path = await download_and_verify
