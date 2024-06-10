@@ -14,7 +14,7 @@ This is a FastAPI application to process and validate CAS numbers or chemical na
 1. Push your code to GitHub.
 2. Create an Azure App Service.
 3. Configure deployment from GitHub.
-4. Monitor and scale your application as needed.
+4. Monitor your application as needed.
 
 ## Running Locally
 
