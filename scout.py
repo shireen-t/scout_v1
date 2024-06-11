@@ -147,6 +147,7 @@ def verify_pdf(file_path, cas=None, name=None):
     try:
         text = extract_text_from_pdf(file_path)
         if text is None:
+            print(f"Failed to extract text from PDF: {file_path}")
             return False
         patterns = [set_pattern("safety data sheet")]
         if cas:
@@ -156,9 +157,11 @@ def verify_pdf(file_path, cas=None, name=None):
 
         verified = all(pattern.search(text) for pattern in patterns)
         if verified:
+            print(f"PDF verified successfully: {file_path}")
             return True
     except Exception as e:
         print(f"An error occurred while verifying {file_path}: {e}")
+    print(f"PDF verification failed: {file_path}")
     return False
 
 # Download and verify PDFs for CAS number or name
@@ -181,7 +184,7 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
     report_list = []
 
     async with aiohttp.ClientSession() as session:
-        for url in search(query, num_results=20):
+        async for url in search(query, num_results=20):
             if DOWNLOADED_FILES_COUNT >= DOWNLOAD_LIMIT:
                 print("Download limit reached.")
                 break
@@ -193,7 +196,7 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
                     if verify_pdf(file_path, cas, name):
                         print(f"Verified PDF: {file_path}")
                         add_report(report_list, cas, name, file_path, True, url, url)
-                        return report_list
+                        return report_list  # Return the report list here
                     else:
                         print(f"Verification failed for: {file_path}")
                 else:
@@ -221,4 +224,4 @@ async def main(input_data):
             verified_pdf_path = await download_and_verify_pdfs(cas, name)
             if verified_pdf_path:
                 report_list.extend(verified_pdf_path)
-    return save_report(report_list)
+    return save_report(report_list)  # Save and return the report list
