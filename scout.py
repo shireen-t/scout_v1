@@ -166,7 +166,7 @@ def verify_pdf(file_path, cas=None, name=None):
 # Download and verify PDFs for CAS number or name
 async def download_and_verify_pdfs(cas=None, name=None, url=None):
     if cas:
-        query = f'"{cas}" filetype:pdf'
+        query = f'"{cas}" "safety data sheet" filetype:pdf'
     elif name:
         query = f'"{name}" "safety data sheet" filetype:pdf'
     elif url:
