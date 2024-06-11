@@ -10,7 +10,7 @@ import json
 # Directories setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PDFS_FOLDER = os.path.join(BASE_DIR, "verified")
-TEMP_FOLDER = os.path.join(BASE_DIR, "uploads")  # Changed to persistent directory
+TEMP_FOLDER = os.path.join(BASE_DIR, "uploads")
 LOGS_FOLDER = os.path.join(BASE_DIR, "logs")
 os.makedirs(PDFS_FOLDER, exist_ok=True)
 os.makedirs(TEMP_FOLDER, exist_ok=True)
@@ -193,7 +193,7 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
                     if verify_pdf(file_path, cas, name):
                         print(f"Verified PDF: {file_path}")
                         add_report(report_list, cas, name, file_path, True, url, url)
-                        return report_list  # Return the report list here
+                        return report_list
                     else:
                         print(f"Verification failed for: {file_path}")
                 else:
@@ -221,4 +221,4 @@ async def main(input_data):
             verified_pdf_path = await download_and_verify_pdfs(cas, name)
             if verified_pdf_path:
                 report_list.extend(verified_pdf_path)
-    return save_report(report_list)  # Save and return the report list
+    return save_report(report_list)
