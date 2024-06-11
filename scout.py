@@ -184,7 +184,7 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
     report_list = []
 
     async with aiohttp.ClientSession() as session:
-        async for url in search(query, num_results=20):
+        for url in search(query, num_results=20):
             if DOWNLOADED_FILES_COUNT >= DOWNLOAD_LIMIT:
                 print("Download limit reached.")
                 break
