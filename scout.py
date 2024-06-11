@@ -3,8 +3,6 @@ import re
 from datetime import datetime
 import fitz  # PyMuPDF
 import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
 from googlesearch import search
 import aiohttp
 import json
@@ -167,10 +165,13 @@ def verify_pdf(file_path, cas=None, name=None):
 async def download_and_verify_pdfs(cas=None, name=None, url=None):
     if cas:
         query = f'"{cas}" "safety data sheet" filetype:pdf'
+        print(f"Querying for CAS: {query}")
     elif name:
         query = f'"{name}" "safety data sheet" filetype:pdf'
+        print(f"Querying for Name: {query}")
     elif url:
         query = f'"{url}" filetype:pdf'
+        print(f"Querying for URL: {query}")
     else:
         print("ERROR: CAS number or name or URL not provided.")
         return []
@@ -185,10 +186,21 @@ async def download_and_verify_pdfs(cas=None, name=None, url=None):
                 print("Download limit reached.")
                 break
             if is_pdf(url):
+                print(f"Found PDF URL: {url}")
                 file_path = await download_pdf(session, url)
-                if file_path and verify_pdf(file_path, cas, name):
-                    add_report(report_list, cas, name, file_path, True, url, url)
-                    return report_list  # Return the report list here
+                if file_path:
+                    print(f"Verifying downloaded PDF: {file_path}")
+                    if verify_pdf(file_path, cas, name):
+                        print(f"Verified PDF: {file_path}")
+                        add_report(report_list, cas, name, file_path, True, url, url)
+                        return report_list  # Return the report list here
+                    else:
+                        print(f"Verification failed for: {file_path}")
+                else:
+                    print(f"Failed to download PDF from: {url}")
+            else:
+                print(f"URL is not a PDF: {url}")
+    print(f"No valid PDFs found for query: {query}")
     return report_list
 
 # Main function
