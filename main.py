@@ -23,8 +23,9 @@ async def run_scout(cas_or_name: str):
     cas_pattern = r'^\d{2,7}-\d{2}-\d$'
     match = re.match(cas_pattern, cas_or_name)
     
+    input_data = [{"cas": cas_or_name}] if match else [{"name": cas_or_name}]
+    
     try:
-        input_data = [{"cas": cas_or_name}] if match else [{"name": cas_or_name}]
         response = await scout_main(input_data)
         if not response:
             raise HTTPException(status_code=404, detail="No PDF found or verification failed.")
